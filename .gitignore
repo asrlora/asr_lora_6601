@@ -1,0 +1,12 @@
+Listings/
+Objects/
+*.uvguix.*
+out/
+EventRecorderStub.scvd
+JLinkLog.txt
+JLinkSettings.ini
+build/scripts/__pycache__/
+tools/toolchain/arm-none-eabi/
+tools/toolchain/bin/
+tools/toolchain/lib/
+tools/toolchain/share/
