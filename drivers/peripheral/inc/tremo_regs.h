@@ -524,11 +524,11 @@ typedef struct {
 
 #define UART_CR_UART_EN ((uint32_t)0x00000001)
 
-#define UART_CR_UART_MODE      ((uint32_t)0x00000030)
+#define UART_CR_UART_MODE      ((uint32_t)0x00000300)
 #define UART_CR_UART_MODE_NONE ((uint32_t)0x00000000)
-#define UART_CR_UART_MODE_RX   ((uint32_t)0x00000020)
-#define UART_CR_UART_MODE_TX   ((uint32_t)0x00000010)
-#define UART_CR_UART_MODE_TXRX ((uint32_t)0x00000030)
+#define UART_CR_UART_MODE_RX   ((uint32_t)0x00000200)
+#define UART_CR_UART_MODE_TX   ((uint32_t)0x00000100)
+#define UART_CR_UART_MODE_TXRX ((uint32_t)0x00000300)
 
 #define UART_CR_FLOW_CTRL         ((uint32_t)0x0000C000)
 #define UART_CR_FLOW_CTRL_NONE    ((uint32_t)0x00000000)
