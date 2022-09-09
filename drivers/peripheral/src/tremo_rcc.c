@@ -328,6 +328,7 @@ void rcc_set_lptimer0_clk_source(rcc_lptimer0_clk_source_t clk_source)
     if (clk_source == RCC_LPTIMER0_CLK_SOURCE_EXTCLK) {
         TREMO_REG_EN(RCC->CR1, RCC_CR1_LPTIMER0_EXTCLK_SEL_MASK, true);
     } else {
+        TREMO_REG_EN(RCC->CR1, RCC_CR1_LPTIMER0_EXTCLK_SEL_MASK, false);
         TREMO_REG_SET(RCC->CR1, RCC_CR1_LPTIMER0_CLK_SEL_MASK, clk_source);
     }
 }
@@ -354,6 +355,7 @@ void rcc_set_lptimer1_clk_source(rcc_lptimer1_clk_source_t clk_source)
     if (clk_source == RCC_LPTIMER1_CLK_SOURCE_EXTCLK) {
         TREMO_REG_EN(RCC->CR1, RCC_CR1_LPTIMER1_EXTCLK_SEL_MASK, true);
     } else {
+        TREMO_REG_EN(RCC->CR1, RCC_CR1_LPTIMER1_EXTCLK_SEL_MASK, false);
         TREMO_REG_SET(RCC->CR1, RCC_CR1_LPTIMER1_CLK_SEL_MASK, clk_source);
     }
 }
