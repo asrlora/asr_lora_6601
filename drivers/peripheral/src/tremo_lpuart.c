@@ -218,11 +218,11 @@ void lpuart_init(lpuart_t* lpuart, lpuart_init_t* uart_init)
 
     lpuart_clk_freq = rcc_get_lpuart_clk_source();
     if (lpuart_clk_freq == RCC_CR1_LPUART_CLK_SEL_XO32K) {
-        freq = 32768;
+        freq = RCC_FREQ_32768;
     } else if (lpuart_clk_freq == RCC_CR1_LPUART_CLK_SEL_RCO32K) {
-        freq = 32000;
+        freq = RCC_FREQ_32000;
     } else {
-        freq = 4000000;
+        freq = RCC_FREQ_4M;
     }
     if (uart_init->low_level_wakeup == true) {
         tmp_value |= LPUART_CR0_LOW_LEVEL_WAKEUP;
