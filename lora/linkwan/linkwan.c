@@ -147,7 +147,7 @@ static void reset_join_state(void)
 {
     g_lwan_device_state = DEVICE_STATE_JOIN;
 }
-static void on_tx_next_packet_timer_event(void)
+static void on_tx_next_packet_timer_event(void *context)
 {
     MibRequestConfirm_t mib_req;
     LoRaMacStatus_t status;

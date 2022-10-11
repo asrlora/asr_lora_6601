@@ -429,17 +429,17 @@ void RadioOnDioIrq( void );
 /*!
  * \brief Tx timeout timer callback
  */
-void RadioOnTxTimeoutIrq( void );
+void RadioOnTxTimeoutIrq( void *context );
 
 /*!
  * \brief Rx timeout timer callback
  */
-void RadioOnRxTimeoutIrq( void );
+void RadioOnRxTimeoutIrq( void *context );
 
 /*!
  * \brief Cad timeout timer callback
  */
-void RadioOnCadTimeoutIrq( void );
+void RadioOnCadTimeoutIrq( void *context );
 /*
  * Private global variables
  */
@@ -1132,7 +1132,7 @@ uint32_t RadioGetWakeupTime( void )
     return SX126xGetBoardTcxoWakeupTime( ) + RADIO_WAKEUP_TIME;
 }
 
-void RadioOnTxTimeoutIrq( void )
+void RadioOnTxTimeoutIrq( void *context )
 {
     if( ( RadioEvents != NULL ) && ( RadioEvents->TxTimeout != NULL ) )
     {
@@ -1140,7 +1140,7 @@ void RadioOnTxTimeoutIrq( void )
     }
 }
 
-void RadioOnRxTimeoutIrq( void )
+void RadioOnRxTimeoutIrq( void *context )
 {
     if( ( RadioEvents != NULL ) && ( RadioEvents->RxTimeout != NULL ) )
     {
@@ -1148,7 +1148,7 @@ void RadioOnRxTimeoutIrq( void )
     }
 }
 
-void RadioOnCadTimeoutIrq( void )
+void RadioOnCadTimeoutIrq( void *context )
 {
     SX126xSetOperatingMode(MODE_SLEEP);
     if( ( RadioEvents != NULL ) && ( RadioEvents->CadDone != NULL ) )

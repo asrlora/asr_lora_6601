@@ -33,29 +33,32 @@
 #define __TIMER_H__
 
 #ifdef __cplusplus
- extern "C" {
+extern "C"
+{
 #endif
 
-/* Includes ------------------------------------------------------------------*/
-
-#include <stdbool.h>     
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include "utilities.h"
-
-/* Exported types ------------------------------------------------------------*/
 
 /*!
  * \brief Timer object description
  */
 typedef struct TimerEvent_s
 {
-    uint32_t Timestamp;         //! Expiring timer value in ticks from TimerContext
-    uint32_t ReloadValue;       //! Reload Value when Timer is restarted
-    bool IsRunning;             //! Is the timer currently running
-    void ( *Callback )( void ); //! Timer IRQ callback function
-    struct TimerEvent_s *Next;  //! Pointer to the next Timer object.
-} TimerEvent_t;
+    uint32_t Timestamp;                  //! Current timer value
+    uint32_t ReloadValue;                //! Timer delay value
+    bool IsStarted;                      //! Is the timer currently running
+    bool IsNext2Expire;                  //! Is the next timer to expire
+    void ( *Callback )( void* context ); //! Timer IRQ callback function
+    void *Context;                       //! User defined data object pointer to pass back
+    struct TimerEvent_s *Next;           //! Pointer to the next Timer object.
+}TimerEvent_t;
 
-
+/*!
+ * \brief Timer time variable definition
+ */
 #ifndef TimerTime_t
 typedef uint64_t TimerTime_t;
 #endif
@@ -147,14 +150,18 @@ TimerSysTime_t TimerGetSysTime( void );
  * \param [IN] obj          Structure containing the timer object parameters
  * \param [IN] callback     Function callback called at the end of the timeout
  */
-void TimerInit( TimerEvent_t *obj, void ( *callback )( void ) );
+void TimerInit( TimerEvent_t *obj, void ( *callback )( void *context ) );
 
 /*!
- * \brief Timer IRQ event handler
+ * \brief Sets a user defined object pointer
  *
- * \note Head Timer Object is automaitcally removed from the List
- *
- * \note e.g. it is snot needded to stop it
+ * \param [IN] context User defined data object pointer to pass back
+ *                     on IRQ handler callback
+ */
+void TimerSetContext( TimerEvent_t *obj, void* context );
+
+/*!
+ * Timer IRQ event handler
  */
 void TimerIrqHandler( void );
 
@@ -164,6 +171,16 @@ void TimerIrqHandler( void );
  * \param [IN] obj Structure containing the timer object parameters
  */
 void TimerStart( TimerEvent_t *obj );
+
+/*!
+ * \brief Checks if the provided timer is running
+ *
+ * \param [IN] obj Structure containing the timer object parameters
+ *
+ * \retval status  returns the timer activity status [true: Started,
+ *                                                    false: Stopped]
+ */
+bool TimerIsStarted( TimerEvent_t *obj );
 
 /*!
  * \brief Stops and removes the timer object from the list of timer events
@@ -187,21 +204,22 @@ void TimerReset( TimerEvent_t *obj );
  */
 void TimerSetValue( TimerEvent_t *obj, uint32_t value );
 
-
 /*!
  * \brief Read the current time
  *
- * \retval returns current time in ms
+ * \retval time returns current time
  */
 TimerTime_t TimerGetCurrentTime( void );
 
 /*!
  * \brief Return the Time elapsed since a fix moment in Time
  *
- * \param [IN] savedTime    fix moment in Time
- * \retval time             returns elapsed time in ms
+ * \remark TimerGetElapsedTime will return 0 for argument 0.
+ *
+ * \param [IN] past         fix moment in Time
+ * \retval time             returns elapsed time
  */
-TimerTime_t TimerGetElapsedTime( TimerTime_t savedTime );
+TimerTime_t TimerGetElapsedTime( TimerTime_t past );
 
 /*!
  * \brief Computes the temperature compensation for a period of time on a
@@ -226,4 +244,4 @@ void TimerLowPowerHandler( void );
 /*! \} defgroup LORA_TIMER */
 /*! \} addtogroup LORA */
 
-#endif /* __TIMER_H__ */
+#endif // __TIMER_H__

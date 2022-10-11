@@ -500,7 +500,7 @@ bool LoRaMacClassBIsAcquisitionInProgress( void )
 #endif // LORAMAC_CLASSB_ENABLED
 }
 
-void LoRaMacClassBBeaconTimerEvent( void )
+void LoRaMacClassBBeaconTimerEvent( void *context )
 {
 #ifdef LORAMAC_CLASSB_ENABLED
     bool activateTimer = false;
@@ -731,7 +731,7 @@ void LoRaMacClassBBeaconTimerEvent( void )
 #endif // LORAMAC_CLASSB_ENABLED
 }
 
-void LoRaMacClassBPingSlotTimerEvent( void )
+void LoRaMacClassBPingSlotTimerEvent( void *context )
 {
 #ifdef LORAMAC_CLASSB_ENABLED
     static RxConfigParams_t pingSlotRxConfig;
@@ -831,7 +831,7 @@ void LoRaMacClassBPingSlotTimerEvent( void )
 #endif // LORAMAC_CLASSB_ENABLED
 }
 
-void LoRaMacClassBMulticastSlotTimerEvent( void )
+void LoRaMacClassBMulticastSlotTimerEvent( void *context )
 {
 #ifdef LORAMAC_CLASSB_ENABLED
     static RxConfigParams_t multicastSlotRxConfig;
@@ -1041,14 +1041,14 @@ bool LoRaMacClassBRxBeacon( uint8_t *payload, uint16_t size )
                 ResetWindowTimeout( );
                 BeaconState = BEACON_STATE_LOCKED;
 
-                LoRaMacClassBBeaconTimerEvent( );
+                LoRaMacClassBBeaconTimerEvent( NULL );
             }
         }
 
         if( BeaconState == BEACON_STATE_RX )
         {
             BeaconState = BEACON_STATE_TIMEOUT;
-            LoRaMacClassBBeaconTimerEvent( );
+            LoRaMacClassBBeaconTimerEvent( NULL );
         }
         // When the MAC listens for a beacon, it is not allowed to process any other
         // downlink except the beacon frame itself. The reason for this is that no valid downlink window is open.
@@ -1150,7 +1150,7 @@ void LoRaMacClassBHaltBeaconing( void )
             ( BeaconState == BEACON_STATE_LOST ) )
         {
             // Update the state machine before halt
-            LoRaMacClassBBeaconTimerEvent( );
+            LoRaMacClassBBeaconTimerEvent( NULL );
         }
 
         // Halt beacon state machine
