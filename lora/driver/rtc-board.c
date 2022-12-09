@@ -339,9 +339,6 @@ TimerTime_t RtcConvertMsToTick( TimerTime_t timeoutValue )
     double retVal = 0;
     uint32_t rtc_ticks_per_second = 32768;
 	
-    if (RCC_RTC_CLK_SOURCE_RCO32K == rcc_get_rtc_clk_source())
-        rtc_ticks_per_second = 32000;
-	
     retVal = round( ( ( double )timeoutValue ) * rtc_ticks_per_second / 1000);
     return( ( TimerTime_t )retVal );
 }

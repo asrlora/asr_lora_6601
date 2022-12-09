@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    ecc.h
  * @author  ASR Tremo Team
- * @version v1.6.2
- * @date    2022-05-28
+ * @version v1.6.3
+ * @date    2022-12-09
  * @brief   Header file of crypto module.
  * @addtogroup Tremo_Drivers
  * @{

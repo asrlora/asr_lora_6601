@@ -445,7 +445,7 @@ void rtc_get_calendar(rtc_calendar_t* rtc_calendar)
     uint32_t syn_data_h;
     uint8_t temp;
     uint16_t subsecond_cnt;
-    float subsecond;
+    float subsecond = 0;
 
     if (rtc_calendar == NULL) {
         return;
@@ -460,11 +460,7 @@ void rtc_get_calendar(rtc_calendar_t* rtc_calendar)
         } while (syn_data_h != RTC->CALENDAR_R_H);
     } while ((subsecond_cnt != rtc_get_subsecond_cnt()) || subsecond_cnt<1);
 
-    if (RCC_RTC_CLK_SOURCE_XO32K == rcc_get_rtc_clk_source()) {
-        subsecond = ((float)(((float)RTC_MICROSECOND) / 32768) * subsecond_cnt) + 0.5;
-    } else {
-        subsecond = ((float)(((float)RTC_MICROSECOND) / 32000) * subsecond_cnt) + 0.5;
-    }
+    subsecond = ((float)(((float)RTC_MICROSECOND) / 32768) * subsecond_cnt) + 0.5;
     rtc_calendar->subsecond = (uint32_t)subsecond;
 
     temp             = syn_data & 0x0F;
@@ -605,11 +601,7 @@ void rtc_set_alarm(uint8_t alarm_index, rtc_alarm_mask_t* alarm_mask, rtc_calend
         return;
     }
     if (alarm_mask->subsecMask != 0) {
-        if (RCC_RTC_CLK_SOURCE_XO32K == rcc_get_rtc_clk_source()) {
-            temp = ((float)(time->subsecond)) / ((float)(((float)RTC_MICROSECOND) / 32768)) + 0.5;
-        } else {
-            temp = ((float)(time->subsecond)) / ((float)(((float)RTC_MICROSECOND) / 32000)) + 0.5;
-        }
+        temp = ((float)(time->subsecond)) / ((float)(((float)RTC_MICROSECOND) / 32768)) + 0.5;
         rtc_check_syn();
         *alarm_subsec_reg &= 0xFFFF0000;
         rtc_check_syn();

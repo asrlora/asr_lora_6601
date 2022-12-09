@@ -17,10 +17,7 @@ uint32_t rcc_get_clk_freq(rcc_clk_t clk)
         sysclk_freq = RCC_FREQ_48M;
         break;
     }
-    case RCC_CR0_SYSCLK_SEL_RCO32K: {
-        sysclk_freq = RCC_FREQ_32000;
-        break;
-    }
+    case RCC_CR0_SYSCLK_SEL_RCO32K:
     case RCC_CR0_SYSCLK_SEL_XO32K: {
         sysclk_freq = RCC_FREQ_32768;
         break;

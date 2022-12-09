@@ -217,10 +217,8 @@ void lpuart_init(lpuart_t* lpuart, lpuart_init_t* uart_init)
     uint32_t freq                           = 0;
 
     lpuart_clk_freq = rcc_get_lpuart_clk_source();
-    if (lpuart_clk_freq == RCC_CR1_LPUART_CLK_SEL_XO32K) {
+    if (lpuart_clk_freq == RCC_CR1_LPUART_CLK_SEL_XO32K || lpuart_clk_freq == RCC_CR1_LPUART_CLK_SEL_RCO32K) {
         freq = RCC_FREQ_32768;
-    } else if (lpuart_clk_freq == RCC_CR1_LPUART_CLK_SEL_RCO32K) {
-        freq = RCC_FREQ_32000;
     } else {
         freq = RCC_FREQ_4M;
     }

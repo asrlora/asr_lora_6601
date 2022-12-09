@@ -22,6 +22,7 @@
  */
 #include <stdlib.h>
 #include "delay.h"
+#include "tremo_rcc.h"
 #include "tremo_gpio.h"
 #include "tremo_regs.h"
 #include "tremo_delay.h"
@@ -61,7 +62,12 @@ uint16_t SpiInOut( uint16_t outData )
 
 void SX126xLoracInit()
 {
-	LORAC->CR0 = 0x00000200;
+    rcc_enable_peripheral_clk(RCC_PERIPHERAL_LORA, false);
+    rcc_rst_peripheral(RCC_PERIPHERAL_LORA, true);
+    rcc_rst_peripheral(RCC_PERIPHERAL_LORA, false);
+    rcc_enable_peripheral_clk(RCC_PERIPHERAL_LORA, true);
+
+    LORAC->CR0 = 0x00000200;
 
     LORAC->SSP_CR0 = 0x07;
     LORAC->SSP_CPSR = 0x02;

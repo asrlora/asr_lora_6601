@@ -84,8 +84,8 @@ void board_init()
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_DMA0, true);
     #endif
 
-    delay_ms(100);
-    pwr_xo32k_lpm_cmd(true);
+    //delay_ms(100);
+    //pwr_xo32k_lpm_cmd(true);
 
     RtcInit();
 }

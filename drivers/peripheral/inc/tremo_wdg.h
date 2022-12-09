@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    tremo_wdg.h
  * @author  ASR Tremo Team
- * @version v1.6.2
- * @date    2022-05-28
+ * @version v1.6.3
+ * @date    2022-12-09
  * @brief   This file contains all the functions prototypes for the WDG firmware
  *          library.
  * @addtogroup Tremo_Drivers
