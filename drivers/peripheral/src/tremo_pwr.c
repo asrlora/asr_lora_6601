@@ -10,6 +10,8 @@
 
 void deepsleep(uint32_t mode, uint32_t wfi)
 {
+    PWR->CR1 |= 1<<4;
+
     if((TREMO_REG_RD(0x10002010) & 0x3) == 0)
         TREMO_REG_SET(PWR->CR1, (0xF<<20), (1<<20));
 	

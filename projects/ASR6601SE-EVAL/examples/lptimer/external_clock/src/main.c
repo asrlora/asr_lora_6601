@@ -44,6 +44,7 @@ void lptim_IRQHandler(void)
 
 int main(void)
 {
+    lptimer_deinit(LPTIMER0);
     rcc_set_lptimer0_clk_source(RCC_LPTIMER0_CLK_SOURCE_EXTCLK);
 
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_GPIOA, true);

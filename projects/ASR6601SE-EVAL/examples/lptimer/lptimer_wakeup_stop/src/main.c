@@ -59,6 +59,7 @@ void lptim_IRQHandler(void)
 
 int main(void)
 {
+    lptimer_deinit(LPTIMER0);
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_AFEC, true);
 
     // enable the clk

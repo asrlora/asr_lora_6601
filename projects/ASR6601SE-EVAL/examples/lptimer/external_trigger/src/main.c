@@ -50,6 +50,7 @@ void lptim_IRQHandler(void)
 
 int main(void)
 {
+    lptimer_deinit(LPTIMER0);
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_GPIOA, true);
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_GPIOB, true);
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_GPIOC, true);

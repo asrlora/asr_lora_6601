@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    sha384_sha512.h
  * @author  ASR Tremo Team
- * @version v1.6.3
- * @date    2022-12-09
+ * @version v2.0.0
+ * @date    2023-05-19
  * @brief   The header file for sha384_sha512
  * @addtogroup Tremo_Drivers
  * @{

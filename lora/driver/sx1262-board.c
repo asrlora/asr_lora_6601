@@ -78,7 +78,7 @@ void SX126xLoracInit()
     {
         delay_us(20);
         LORAC->NSS_CR = 0;
-        delay_us(20);
+        delay_us(110);
         LORAC->NSS_CR = 1;
     }
 

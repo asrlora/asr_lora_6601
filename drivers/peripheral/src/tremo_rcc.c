@@ -1,3 +1,4 @@
+#include "tremo_delay.h"
 #include "tremo_rcc.h"
 
 /**
@@ -811,6 +812,8 @@ void rcc_enable_peripheral_clk(rcc_peripheral_t peripheral, bool new_state)
         while ((RCC->SR & RCC_SR_ALL_DONE) != RCC_SR_ALL_DONE)
             ;
         TREMO_REG_EN(RCC->CGR2, RCC_CGR2_LPUART_AON_CLK_EN_MASK, new_state);
+        while ((RCC->SR & RCC_SR_LPUART_AON_CLK_EN_DONE) != RCC_SR_LPUART_AON_CLK_EN_DONE)
+            ;
         break;
     }
     case RCC_PERIPHERAL_SSP0: {
@@ -859,6 +862,8 @@ void rcc_enable_peripheral_clk(rcc_peripheral_t peripheral, bool new_state)
         while ((RCC->SR & RCC_SR_ALL_DONE) != RCC_SR_ALL_DONE)
             ;
         TREMO_REG_EN(RCC->CGR2, RCC_CGR2_LCD_AON_CLK_EN_MASK, new_state);
+        while ((RCC->SR & RCC_SR_LCD_AON_CLK_EN_DONE) != RCC_SR_LCD_AON_CLK_EN_DONE)
+            ;
         break;
     }
     case RCC_PERIPHERAL_LORA: {
@@ -912,6 +917,8 @@ void rcc_enable_peripheral_clk(rcc_peripheral_t peripheral, bool new_state)
             while ((RCC->SR & RCC_SR_ALL_DONE) != RCC_SR_ALL_DONE)
                 ;
             TREMO_REG_EN(RCC->CGR2, RCC_CGR2_LPTIMER0_AON_CLK_EN_MASK, new_state);
+            while ((RCC->SR & RCC_SR_LPTIM_AON_CLK_EN_DONE) != RCC_SR_LPTIM_AON_CLK_EN_DONE)
+                ;
 
             TREMO_REG_EN(RCC->CGR1, RCC_CGR1_LPTIMER0_CLK_EN_MASK, new_state);
         } else {
@@ -920,8 +927,10 @@ void rcc_enable_peripheral_clk(rcc_peripheral_t peripheral, bool new_state)
             while ((RCC->SR & RCC_SR_ALL_DONE) != RCC_SR_ALL_DONE)
                 ;
             TREMO_REG_EN(RCC->CGR2, RCC_CGR2_LPTIMER0_AON_CLK_EN_MASK, new_state);
+            while ((RCC->SR & RCC_SR_LPTIM_AON_CLK_EN_DONE) != RCC_SR_LPTIM_AON_CLK_EN_DONE)
+                ;
 
-            TREMO_REG_EN(RCC->CGR1, RCC_CGR1_LPTIMER0_PCLK_EN_MASK, new_state);
+            //TREMO_REG_EN(RCC->CGR1, RCC_CGR1_LPTIMER0_PCLK_EN_MASK, new_state);
         }
 
         break;
@@ -934,6 +943,8 @@ void rcc_enable_peripheral_clk(rcc_peripheral_t peripheral, bool new_state)
             while ((RCC->SR & RCC_SR_ALL_DONE) != RCC_SR_ALL_DONE)
                 ;
             TREMO_REG_EN(RCC->CGR2, RCC_CGR2_LPTIMER1_AON_CLK_EN_MASK, new_state);
+            while ((RCC->SR & RCC_SR_LPTIMER1_AON_CLK_EN_DONE) != RCC_SR_LPTIMER1_AON_CLK_EN_DONE)
+                ;
 
             TREMO_REG_EN(RCC->CGR1, RCC_CGR1_LPTIMER1_CLK_EN_MASK, new_state);
         } else {
@@ -942,8 +953,10 @@ void rcc_enable_peripheral_clk(rcc_peripheral_t peripheral, bool new_state)
             while ((RCC->SR & RCC_SR_ALL_DONE) != RCC_SR_ALL_DONE)
                 ;
             TREMO_REG_EN(RCC->CGR2, RCC_CGR2_LPTIMER1_AON_CLK_EN_MASK, new_state);
+            while ((RCC->SR & RCC_SR_LPTIMER1_AON_CLK_EN_DONE) != RCC_SR_LPTIMER1_AON_CLK_EN_DONE)
+                ;
 
-            TREMO_REG_EN(RCC->CGR1, RCC_CGR1_LPTIMER1_PCLK_EN_MASK, new_state);
+            //TREMO_REG_EN(RCC->CGR1, RCC_CGR1_LPTIMER1_PCLK_EN_MASK, new_state);
         }
 
         break;
@@ -954,6 +967,8 @@ void rcc_enable_peripheral_clk(rcc_peripheral_t peripheral, bool new_state)
         while ((RCC->SR & RCC_SR_ALL_DONE) != RCC_SR_ALL_DONE)
             ;
         TREMO_REG_EN(RCC->CGR2, RCC_CGR2_IWDG_CLK_EN_MASK, new_state);
+        while ((RCC->SR & RCC_SR_IWDG_AON_CLK_EN_DONE) != RCC_SR_IWDG_AON_CLK_EN_DONE)
+            ;
 
         break;
     }
@@ -968,6 +983,8 @@ void rcc_enable_peripheral_clk(rcc_peripheral_t peripheral, bool new_state)
         while ((RCC->SR & RCC_SR_ALL_DONE) != RCC_SR_ALL_DONE)
             ;
         TREMO_REG_EN(RCC->CGR2, RCC_CGR2_RTC_AON_CLK_EN_MASK, new_state);
+        while ((RCC->SR & RCC_SR_RTC_AON_CLK_EN_DONE) != RCC_SR_RTC_AON_CLK_EN_DONE)
+            ;
         break;
     }
     case RCC_PERIPHERAL_CRC: {
@@ -1083,6 +1100,15 @@ void rcc_rst_peripheral(rcc_peripheral_t peripheral, bool new_state)
             pos = RCC_PERIPHERAL_GPIOA;
 
         TREMO_REG_EN(RCC->RST0, 1 << pos, !new_state);
+    }
+
+    if((!new_state) && (peripheral == RCC_PERIPHERAL_LPTIMER1 ||
+                        peripheral == RCC_PERIPHERAL_LPTIMER0 ||
+                        peripheral == RCC_PERIPHERAL_LCD      ||
+                        peripheral == RCC_PERIPHERAL_RTC      ||
+                        peripheral == RCC_PERIPHERAL_IWDG     ||
+                        peripheral == RCC_PERIPHERAL_LPUART)) {
+        delay_us(92);
     }
 }
 
