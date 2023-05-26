@@ -1,5 +1,5 @@
 /*!
- * \file      main.c
+ * \file      class_a.c
  *
  * \brief     LoRaMac classA device implementation
  *
@@ -23,17 +23,94 @@
 
 #include <stdio.h>
 #include "utilities.h"
+
 #include "LoRaMac.h"
 #include "Commissioning.h"
 
+#include "tremo_gpio.h"
+#include "tremo_regs.h"
+#include "tremo_adc.h"
+#define ADC_DATA_NUM 2
+uint16_t adc_data_1[ADC_DATA_NUM] = {0};
+uint16_t adc_data_2[ADC_DATA_NUM] = {0};
+float calibrated_sample_1[ADC_DATA_NUM] = {0.0};
+float calibrated_sample_2[ADC_DATA_NUM] = {0.0};
+
+void floatToByte(uint8_t* bytes, float f){
+
+  int length = sizeof(float);
+
+  for(int i = 0; i < length; i++){
+    bytes[i] = ((uint8_t*)&f)[i];
+  }
+
+}
+void adc_initialization(void)
+{
+	gpio_t *gpiox;
+    uint32_t pin;
+    
+    gpiox = GPIOA;
+    pin = GPIO_PIN_8;
+    gpio_init(gpiox, pin, GPIO_MODE_ANALOG);
+    pin = GPIO_PIN_11;
+    gpio_init(gpiox, pin, GPIO_MODE_ANALOG);
+
+    adc_init();
+
+    adc_config_clock_division(20); //sample frequence 150K
+
+    adc_config_sample_sequence(0, 1);
+    adc_config_sample_sequence(1, 2);
+    adc_config_sample_sequence(2, 2);
+
+    adc_config_conv_mode(ADC_CONV_MODE_SINGLE);
+
+}
+void adc_single_mode_test(void)
+{
+    uint32_t i;
+    
+    float gain_value;
+    float dco_value;
+
+    adc_get_calibration_value(false, &gain_value, &dco_value);
+	adc_enable(true);
+    adc_start(true);
+
+    for (i = 0; i < ADC_DATA_NUM; i++)
+    {
+        while(!adc_get_interrupt_status(ADC_ISR_EOC));
+        adc_data_1[i] = adc_get_data();
+        while(!adc_get_interrupt_status(ADC_ISR_EOC));
+        adc_data_2[i] = adc_get_data();
+        while(!adc_get_interrupt_status(ADC_ISR_EOC));
+        (void)adc_get_data();
+        adc_start(true);
+    }
+
+    adc_start(false);
+    adc_enable(false);
+
+    for (i = 0; i < ADC_DATA_NUM; i++)
+    {//calibration sample value
+        calibrated_sample_1[i] = ((1.2/4096) * adc_data_1[i] - dco_value) / gain_value;
+        calibrated_sample_2[i] = ((1.2/4096) * adc_data_2[i] - dco_value) / gain_value;
+		printf("Sample ch1:%f\n\r",calibrated_sample_1[i]);
+		printf("Sample ch2:%f\n\r",calibrated_sample_2[i]);
+    }
+	
+}
+
+
+
+
+
 #ifndef ACTIVE_REGION
 
-#warning "No active region defined, LORAMAC_REGION_CN470 will be used as default."
-
-#define ACTIVE_REGION LORAMAC_REGION_CN470
+#define ACTIVE_REGION LORAMAC_REGION_EU433
 
 #endif
-
 /*!
  * Defines the application data transmission duty cycle. 5s, value in [ms].
  */
@@ -66,7 +143,7 @@
  * LoRaWAN application port
  */
 #define LORAWAN_APP_PORT                            2
-   
+
 static uint8_t DevEui[] = LORAWAN_DEVICE_EUI;
 static uint8_t AppEui[] = LORAWAN_APPLICATION_EUI;
 static uint8_t AppKey[] = LORAWAN_APPLICATION_KEY;
@@ -135,11 +212,18 @@ static enum eDeviceState
  */
 static void PrepareTxFrame( uint8_t port )
 {
-    AppDataSize = 4;
+    float sample1 = 0.0;
+	//float sample2 = 0.0;
+	adc_single_mode_test();
+	sample1 = (calibrated_sample_1[0]+calibrated_sample_1[1])/2;
+	//sample2 = (calibrated_sample_2[0]+calibrated_sample_2[1])/2;
+	floatToByte(AppData, sample1);	
+	/*AppDataSize = 4;
     AppData[0] = 0x00;
     AppData[1] = 0x01;
     AppData[2] = 0x02;
     AppData[3] = 0x03;
+	*/
 }
 
 /*!
@@ -430,6 +514,7 @@ uint8_t BoardGetBatteryLevel( void )
  */
 int app_start( void )
 {
+	adc_initialization();
     LoRaMacPrimitives_t LoRaMacPrimitives;
     LoRaMacCallback_t LoRaMacCallbacks;
     MibRequestConfirm_t mibReq;

@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    rsa.h
  * @author  ASR Tremo Team
- * @version v1.6.3
- * @date    2022-12-09
+ * @version v2.0.0
+ * @date    2023-05-19
  * @brief   The header file for rsa
  * @addtogroup Tremo_Drivers
  * @{

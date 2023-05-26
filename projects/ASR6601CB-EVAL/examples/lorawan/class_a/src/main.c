@@ -40,7 +40,7 @@ void board_init()
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_RTC, true);
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_SAC, true);
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_LORA, true);
-
+	rcc_enable_peripheral_clk(RCC_PERIPHERAL_ADC, true);
     //delay_ms(100);
     //pwr_xo32k_lpm_cmd(true);
 
@@ -53,7 +53,8 @@ int main(void)
 {
     // Target board initialization
     board_init();
-
+    printf("Nodo EU433 TRLA TFM UNED\n\r");
+    printf("Dev 70 B3 D5 7E D0 05 CF 25\n\r");
     app_start();
 }
 
