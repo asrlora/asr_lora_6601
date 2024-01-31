@@ -1207,7 +1207,14 @@ void RadioIrqProcess( void )
             SX126xGetPacketStatus( &RadioPktStatus );
             if( ( RadioEvents != NULL ) && ( RadioEvents->RxDone != NULL ) && ( ( irqRegs & IRQ_CRC_ERROR ) != IRQ_CRC_ERROR ) )
             {
-                RadioEvents->RxDone( RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt+RadioPktStatus.Params.LoRa.SnrPkt, RadioPktStatus.Params.LoRa.SnrPkt );
+                if (SX126xGetPacketType() == PACKET_TYPE_LORA)
+                {
+                  RadioEvents->RxDone( RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt+RadioPktStatus.Params.LoRa.SnrPkt, RadioPktStatus.Params.LoRa.SnrPkt );
+                }
+                else
+                {
+                  RadioEvents->RxDone( RadioRxPayload, size, RadioPktStatus.Params.Gfsk.RssiAvg, RadioPktStatus.Params.Gfsk.RssiSync );
+                }
             }
         }
 
