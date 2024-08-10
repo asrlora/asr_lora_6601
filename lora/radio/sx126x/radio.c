@@ -661,25 +661,25 @@ void RadioSetRxConfig( RadioModems_t modem, uint32_t bandwidth,
             SX126x.PacketParams.PacketType = PACKET_TYPE_GFSK;
             SX126x.PacketParams.Params.Gfsk.PreambleLength = ( preambleLen << 3 ); // convert byte into bit
             SX126x.PacketParams.Params.Gfsk.PreambleMinDetect = RADIO_PREAMBLE_DETECTOR_08_BITS;
-            SX126x.PacketParams.Params.Gfsk.SyncWordLength = 3 << 3; // convert byte into bit
+            SX126x.PacketParams.Params.Gfsk.SyncWordLength    = 4 << 3; // convert byte into bit
             SX126x.PacketParams.Params.Gfsk.AddrComp = RADIO_ADDRESSCOMP_FILT_OFF;
             SX126x.PacketParams.Params.Gfsk.HeaderType = ( fixLen == true ) ? RADIO_PACKET_FIXED_LENGTH : RADIO_PACKET_VARIABLE_LENGTH;
             SX126x.PacketParams.Params.Gfsk.PayloadLength = MaxPayloadLength;
             if( crcOn == true )
             {
-                SX126x.PacketParams.Params.Gfsk.CrcLength = RADIO_CRC_2_BYTES_CCIT;
+              SX126x.PacketParams.Params.Gfsk.CrcLength = RADIO_CRC_2_BYTES_IBM;
             }
             else
             {
                 SX126x.PacketParams.Params.Gfsk.CrcLength = RADIO_CRC_OFF;
             }
-            SX126x.PacketParams.Params.Gfsk.DcFree = RADIO_DC_FREEWHITENING;
+            SX126x.PacketParams.Params.Gfsk.DcFree = RADIO_DC_FREE_OFF;
 
             RadioStandby( );
             RadioSetModem( ( SX126x.ModulationParams.PacketType == PACKET_TYPE_GFSK ) ? MODEM_FSK : MODEM_LORA );
             SX126xSetModulationParams( &SX126x.ModulationParams );
             SX126xSetPacketParams( &SX126x.PacketParams );
-            SX126xSetSyncWord( ( uint8_t[] ){ 0xC1, 0x94, 0xC1, 0x00, 0x00, 0x00, 0x00, 0x00 } );
+            SX126xSetSyncWord((uint8_t[]){ 0xD3, 0x91, 0xD3, 0x91, 0x00, 0x00, 0x00, 0x00 });
             SX126xSetWhiteningSeed( 0x01FF );
 
             RxTimeout = ( uint32_t )( symbTimeout * ( ( 1.0 / ( double )datarate ) * 8.0 ) * 1000 );
@@ -772,25 +772,25 @@ void RadioSetTxConfig( RadioModems_t modem, int8_t power, uint32_t fdev,
             SX126x.PacketParams.PacketType = PACKET_TYPE_GFSK;
             SX126x.PacketParams.Params.Gfsk.PreambleLength = ( preambleLen << 3 ); // convert byte into bit
             SX126x.PacketParams.Params.Gfsk.PreambleMinDetect = RADIO_PREAMBLE_DETECTOR_08_BITS;
-            SX126x.PacketParams.Params.Gfsk.SyncWordLength = 3 << 3 ; // convert byte into bit
+            SX126x.PacketParams.Params.Gfsk.SyncWordLength    = 4 << 3; // convert byte into bit
             SX126x.PacketParams.Params.Gfsk.AddrComp = RADIO_ADDRESSCOMP_FILT_OFF;
             SX126x.PacketParams.Params.Gfsk.HeaderType = ( fixLen == true ) ? RADIO_PACKET_FIXED_LENGTH : RADIO_PACKET_VARIABLE_LENGTH;
 
             if( crcOn == true )
             {
-                SX126x.PacketParams.Params.Gfsk.CrcLength = RADIO_CRC_2_BYTES_CCIT;
+                SX126x.PacketParams.Params.Gfsk.CrcLength = RADIO_CRC_2_BYTES_IBM;
             }
             else
             {
                 SX126x.PacketParams.Params.Gfsk.CrcLength = RADIO_CRC_OFF;
             }
-            SX126x.PacketParams.Params.Gfsk.DcFree = RADIO_DC_FREEWHITENING;
+            SX126x.PacketParams.Params.Gfsk.DcFree = RADIO_DC_FREE_OFF;
 
             RadioStandby( );
             RadioSetModem( ( SX126x.ModulationParams.PacketType == PACKET_TYPE_GFSK ) ? MODEM_FSK : MODEM_LORA );
             SX126xSetModulationParams( &SX126x.ModulationParams );
             SX126xSetPacketParams( &SX126x.PacketParams );
-            SX126xSetSyncWord( ( uint8_t[] ){ 0xC1, 0x94, 0xC1, 0x00, 0x00, 0x00, 0x00, 0x00 } );
+            SX126xSetSyncWord((uint8_t[]){ 0xD3, 0x91, 0xD3, 0x91, 0x00, 0x00, 0x00, 0x00 });
             SX126xSetWhiteningSeed( 0x01FF );
             break;
 
@@ -1207,7 +1207,14 @@ void RadioIrqProcess( void )
             SX126xGetPacketStatus( &RadioPktStatus );
             if( ( RadioEvents != NULL ) && ( RadioEvents->RxDone != NULL ) && ( ( irqRegs & IRQ_CRC_ERROR ) != IRQ_CRC_ERROR ) )
             {
-                RadioEvents->RxDone( RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt+RadioPktStatus.Params.LoRa.SnrPkt, RadioPktStatus.Params.LoRa.SnrPkt );
+                if (SX126xGetPacketType() == PACKET_TYPE_LORA)
+                {
+                  RadioEvents->RxDone( RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt+RadioPktStatus.Params.LoRa.SnrPkt, RadioPktStatus.Params.LoRa.SnrPkt );
+                }
+                else
+                {
+                  RadioEvents->RxDone( RadioRxPayload, size, RadioPktStatus.Params.Gfsk.RssiAvg, RadioPktStatus.Params.Gfsk.RssiSync );
+                }
             }
         }
 
